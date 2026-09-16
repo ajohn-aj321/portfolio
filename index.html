@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Angel John // Designer, Developer & Creator</title>
+  
+  <!-- Cormorant Garamond, Alex Brush, Instrument Serif, Sans & Monospace -->
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@1,600;1,700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Three.js + GSAP with ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #040406;
+      --surface-card: rgba(18, 20, 26, 0.65);
+      --surface-hover: rgba(26, 30, 40, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-highlight: rgba(255, 255, 255, 0.24);
+      --glow-blue: rgba(56, 189, 248, 0.25);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ========================================================
+       INTRO GATE: CLEAN CLASSIC "AJ" + SWARMING PARTICLES
+       ======================================================== */
+    #introGate {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #020204;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
+      cursor: pointer;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    #creepyDotsCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .intro-center {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .royal-aura {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, rgba(56, 189, 248, 0.08) 45%, transparent 75%);
+      filter: blur(45px);
+      pointer-events: none;
+    }
+
+    /* Exact Classic Italic Monogram */
+    .intro-aj-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(7.5rem, 24vw, 17rem);
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 2px;
+      line-height: 1;
+      text-shadow: 
+        0 0 25px rgba(255, 255, 255, 0.95), 
+        0 0 70px rgba(255, 255, 255, 0.55), 
+        0 0 130px rgba(56, 189, 248, 0.35);
+      animation: royalPulse 2.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes royalPulse {
+      0% {
+        transform: scale(0.98);
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.7), 0 0 45px rgba(255, 255, 255, 0.3);
+      }
+      100% {
+        transform: scale(1.02);
+        text-shadow: 0 0 35px rgba(255, 255, 255, 1), 0 0 80px rgba(255, 255, 255, 0.7), 0 0 140px rgba(56, 189, 248, 0.5);
+      }
+    }
+
+    /* WebGL Horizon */
+    #webgl-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    /* Atmospheric Smokey Glows */
+    .glow-aura {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(160px);
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.22;
+    }
+    .glow-1 {
+      top: -50px;
+      left: 30%;
+      width: 800px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.3), transparent 70%);
+    }
+    .glow-2 {
+      bottom: -100px;
+      right: 5%;
+      width: 750px;
+      height: 550px;
+      background: radial-gradient(circle, rgba(148, 163, 184, 0.25), transparent 75%);
+    }
+
+    /* Top Navigation */
+    .nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 26px 6%;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      background: rgba(4, 4, 6, 0.65);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    .signature-logo {
+      font-family: 'Alex Brush', cursive;
+      font-size: 2.3rem;
+      color: #ffffff;
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .nav-menu-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-menu-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      transition: color 0.25s ease;
+    }
+
+    .nav-menu-links a:hover {
+      color: #ffffff;
+    }
+
+    .menu-burger {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+    .menu-burger span {
+      width: 22px;
+      height: 1.5px;
+      background-color: #ffffff;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* ========================================================
+       SLIDE 1 (HERO): POPPING OUT "ANGEL JOHN"
+       ======================================================== */
+    .hero-stage {
+      position: relative;
+      min-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      padding: 40px 0 80px;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(0.9rem, 2vw, 1.35rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      color: #ffffff;
+      margin-bottom: 24px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      line-height: 1.4;
+    }
+
+    .kinetic-text-wrap {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: clamp(140px, 20vw, 240px);
+      cursor: default;
+      user-select: none;
+      perspective: 1200px;
+    }
+
+    .kinetic-massive-title {
+      grid-area: 1 / 1;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(4.5rem, 12.5vw, 11rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -2px;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+      color: #ffffff;
+      text-shadow: 0 0 35px rgba(255, 255, 255, 0.4), 0 0 80px rgba(56, 189, 248, 0.2);
+      z-index: 2;
+      opacity: 0;
+      transform: scale(0.7) translateY(40px);
+      will-change: transform, opacity;
+    }
+
+    .kinetic-ghost-title {
+      grid-area: 1 / 1;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(4.5rem, 12.5vw, 11rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -2px;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+      color: transparent;
+      -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.4);
+      opacity: 0;
+      transform: translate(0px, 24px) scale(0.7);
+      z-index: 1;
+      filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.35));
+      mix-blend-mode: screen;
+      will-change: transform, opacity;
+    }
+
+    .hero-bottom-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 100%;
+      max-width: 1100px;
+      margin-top: 50px;
+      z-index: 5;
+    }
+
+    .hero-left-card {
+      max-width: 440px;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .hero-left-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .hero-left-card p {
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    .scroll-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding-bottom: 8px;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .scroll-wheel {
+      width: 14px;
+      height: 22px;
+      border: 1px solid var(--text-muted);
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .scroll-wheel::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 5px;
+      background: #ffffff;
+      border-radius: 2px;
+      animation: wheel 1.5s infinite;
+    }
+
+    @keyframes wheel {
+      0% { opacity: 1; transform: translate(-50%, 0); }
+      100% { opacity: 0; transform: translate(-50%, 8px); }
+    }
+
+    .capsule-btn {
+      display: inline-flex;
+      align-items: center;
+      background: #ffffff;
+      color: #000000;
+      padding: 11px 24px;
+      border-radius: 999px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.84rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
+      border: none;
+      cursor: pointer;
+    }
+
+    .capsule-btn span {
+      margin-left: 12px;
+      background: #000000;
+      color: #ffffff;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .capsule-btn:hover {
+      background: #e2e8f0;
+      box-shadow: 0 0 35px rgba(255, 255, 255, 0.4);
+    }
+
+    /* ========================================================
+       SLIDE 2: EDITORIAL "ABOUT / BUILT DIFFERENT."
+       ======================================================== */
+    .editorial-about-slide {
+      position: relative;
+      min-height: 94vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 100px 0 90px;
+    }
+
+    .about-top-deck {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      align-items: flex-start;
+      gap: 40px;
+      margin-bottom: 50px;
+    }
+
+    .about-left-title {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .editorial-heading {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: clamp(4.2rem, 9vw, 8.5rem);
+      font-weight: 400;
+      line-height: 0.88;
+      color: #ffffff;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+
+    .built-different-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: 0.2px;
+    }
+
+    .dot-white {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      display: inline-block;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    }
+
+    .credential-tiles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .credential-tile {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 20px 18px;
+      backdrop-filter: blur(20px);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 125px;
+    }
+
+    .credential-tile:hover {
+      border-color: var(--border-highlight);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .tile-icon-wrap {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      height: 32px;
+    }
+
+    .tile-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.35;
+      margin-bottom: 4px;
+    }
+
+    .tile-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .about-main-stage {
+      display: grid;
+      grid-template-columns: 1.05fr 1.25fr;
+      align-items: center;
+      gap: 50px;
+      position: relative;
+    }
+
+    .cinematic-portrait-container {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .cinematic-light-arc {
+      position: absolute;
+      width: 580px;
+      height: 580px;
+      border-radius: 50%;
+      border: 1.5px solid transparent;
+      border-top-color: rgba(56, 189, 248, 0.65);
+      border-right-color: rgba(255, 255, 255, 0.4);
+      filter: blur(3px) drop-shadow(0 0 30px rgba(56, 189, 248, 0.35));
+      transform: rotate(35deg) translate(-20px, 30px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .portrait-image-mask {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-height: 540px;
+      border-radius: 28px;
+      overflow: hidden;
+      mask-image: radial-gradient(circle at 50% 50%, black 65%, transparent 100%), linear-gradient(to bottom, black 80%, transparent 100%);
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, black 65%, transparent 100%), linear-gradient(to bottom, black 80%, transparent 100%);
+    }
+
+    .portrait-image-mask img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      display: block;
+      filter: contrast(1.08) brightness(0.92);
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .portrait-image-mask:hover img {
+      transform: scale(1.03);
+    }
+
+    .about-bio-column {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-left: 20px;
+    }
+
+    .micro-about-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #cbd5e1;
+      margin-bottom: 24px;
+      font-weight: 700;
+    }
+
+    .editorial-bio-text {
+      font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+      font-weight: 400;
+      line-height: 1.6;
+      color: #e2e8f0;
+      margin-bottom: 28px;
+    }
+
+    .editorial-bio-text strong {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .bio-highlight-line {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.65;
+      margin-bottom: 36px;
+    }
+
+    /* ========================================================
+       SLIDE 3: CASCADING DIAGONAL CARDS
+       ======================================================== */
+    .diagonal-showcase-section {
+      padding: 100px 0 130px;
+      position: relative;
+    }
+
+    .section-tagline {
+      font-family: 'JetBrains Mono', monospace;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .cascading-deck {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+      align-items: start;
+      perspective: 1400px;
+      position: relative;
+      margin: 40px 0 50px;
+    }
+
+    .stagger-col:nth-child(1) { transform: translateY(0px); }
+    .stagger-col:nth-child(2) { transform: translateY(60px); }
+    .stagger-col:nth-child(3) { transform: translateY(120px); }
+    .stagger-col:nth-child(4) { transform: translateY(180px); }
+
+    .cascading-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 24px;
+      padding: 44px 28px 36px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .cascading-card:hover {
+      transform: translateY(-8px) scale(1.03) rotate(-1deg);
+      border-color: var(--border-highlight);
+      box-shadow: 0 35px 80px rgba(0, 0, 0, 0.95), 0 0 45px rgba(56, 189, 248, 0.2);
+    }
+
+    .card-big-stat {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.4rem, 3.8vw, 3.6rem);
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .card-big-stat.italic-serif {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: clamp(2.8rem, 4.2vw, 4.2rem);
+      font-weight: 400;
+      letter-spacing: 0px;
+    }
+
+    .card-dot-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .card-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+    .card-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      letter-spacing: 0.3px;
+    }
+
+    /* ========================================================
+       SLIDE 4: CRAFTS, TOOLS & TECHNOLOGY
+       ======================================================== */
+    .toolkit-section {
+      padding: 100px 0 120px;
+    }
+
+    .toolkit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 40px;
+    }
+
+    .toolkit-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 3.8vw, 3.2rem);
+      font-weight: 900;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .tool-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 28px;
+      padding: 36px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(16px);
+      transition: all 0.3s ease;
+    }
+
+    .tool-card:hover, .tool-card.active {
+      border-color: var(--border-highlight);
+      background: var(--surface-hover);
+      box-shadow: 0 0 35px rgba(255, 255, 255, 0.1);
+      transform: translateY(-4px);
+    }
+
+    .tool-icon-ring {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 18px;
+      transition: all 0.3s ease;
+    }
+
+    .tool-card.active .tool-icon-ring {
+      border-color: #ffffff;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.35);
+    }
+
+    .tool-card h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .tool-desc-bar {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 24px 32px;
+      font-size: 1rem;
+      line-height: 1.65;
+      color: #ffffff;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    /* ========================================================
+       BOOM PHOTO REVEALS (PHOTOS 2 & 3)
+       ======================================================== */
+    .boom-section {
+      padding: 90px 0;
+    }
+
+    .boom-panel {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 30px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85);
+      opacity: 0;
+      transform: scale(0.7) translateY(80px);
+      will-change: transform, opacity;
+    }
+
+    .boom-img-wrap {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .boom-img-wrap img {
+      width: 100%;
+      max-height: 520px;
+      object-fit: contain;
+      border-radius: 18px;
+    }
+
+    .boom-text {
+      padding: 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .boom-text h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 14px;
+    }
+
+    .boom-text p {
+      color: var(--text-muted);
+      font-size: 0.96rem;
+      line-height: 1.7;
+    }
+
+    /* Stack Cards (Photos 7, 8, 9, 10) */
+    .cards-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 60px;
+      margin: 40px 0 120px;
+    }
+
+    .stack-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 28px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      align-items: center;
+      backdrop-filter: blur(20px);
+      opacity: 0;
+      transform: translateY(50px);
+      transition: border-color 0.3s ease;
+    }
+
+    .stack-card:hover {
+      border-color: var(--border-highlight);
+    }
+
+    .stack-card.reverse {
+      grid-template-columns: 1fr 1.15fr;
+    }
+    .stack-card.reverse .boom-img-wrap { order: 2; }
+    .stack-card.reverse .boom-text { order: 1; }
+
+    /* "WANNA COLLABORATE?" BANNER */
+    .collab-section {
+      padding: 100px 0;
+      text-align: center;
+    }
+
+    .collab-banner {
+      background: linear-gradient(135deg, rgba(16, 20, 28, 0.8), rgba(6, 8, 12, 0.95));
+      border: 1px solid var(--border-subtle);
+      border-radius: 36px;
+      padding: 90px 30px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.7);
+    }
+
+    .collab-banner h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.8rem, 6.5vw, 5.5rem);
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .collab-banner p {
+      max-width: 600px;
+      margin: 0 auto 36px;
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* ========================================================
+       YAROSLAV FOOTER: PROMINENT LARGE WATERMARK
+       ======================================================== */
+    .yaroslav-footer {
+      padding: 100px 0 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .footer-content-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.1fr 1.1fr;
+      align-items: start;
+      gap: 40px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .footer-brand-bio h3 {
+      font-family: 'Alex Brush', cursive;
+      font-size: 3.2rem;
+      color: #ffffff;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+
+    .footer-brand-bio p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 6px;
+    }
+
+    .footer-center-nav {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .footer-center-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .footer-center-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      transition: color 0.2s ease;
+    }
+
+    .footer-center-links a:hover {
+      color: #ffffff;
+    }
+
+    .social-connect-pills {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .social-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(14px);
+    }
+
+    .social-pill svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    .social-pill:hover {
+      background: var(--surface-hover);
+      border-color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+    }
+
+    .footer-email-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .footer-email-tag a {
+      color: #ffffff;
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+      padding-bottom: 2px;
+      transition: all 0.2s ease;
+    }
+
+    .footer-email-tag a:hover {
+      color: #38bdf8;
+      border-color: #38bdf8;
+    }
+
+    .footer-pitch-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 18px;
+    }
+
+    .footer-pitch-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 22px;
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .pitch-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .pitch-text h5 {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: 1.25rem;
+      color: #ffffff;
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+
+    .pitch-text a {
+      color: #ffffff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      transition: opacity 0.2s ease;
+    }
+
+    .pitch-text a:hover {
+      opacity: 0.8;
+    }
+
+    .social-badges-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .iconic-square-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(14px);
+    }
+
+    .iconic-square-badge svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .iconic-square-badge:hover {
+      border-color: #ffffff;
+      background: #ffffff;
+      color: #000000;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+    }
+
+    /* MASSIVE BOTTOM CURSIVE STATEMENT */
+    .giant-cursive-watermark {
+      font-family: 'Alex Brush', cursive;
+      font-size: clamp(8.5rem, 24vw, 24rem);
+      color: rgba(255, 255, 255, 0.08);
+      line-height: 0.8;
+      text-align: center;
+      user-select: none;
+      pointer-events: none;
+      margin-top: 20px;
+      transform: translateY(25px);
+      white-space: nowrap;
+      filter: drop-shadow(0 0 35px rgba(255, 255, 255, 0.03));
+    }
+
+    @media (max-width: 950px) {
+      .about-top-deck { grid-template-columns: 1fr; gap: 30px; }
+      .about-main-stage { grid-template-columns: 1fr; gap: 40px; }
+      .about-bio-column { padding-left: 0; }
+      .credential-tiles { grid-template-columns: 1fr; }
+      .cinematic-light-arc { display: none; }
+      .cascading-deck { grid-template-columns: 1fr 1fr; gap: 16px; }
+      .stagger-col:nth-child(n) { transform: translateY(0); }
+      .tools-grid { grid-template-columns: 1fr 1fr; }
+      .boom-panel { grid-template-columns: 1fr; }
+      .stack-card { grid-template-columns: 1fr; }
+      .stack-card.reverse { grid-template-columns: 1fr; }
+      .stack-card.reverse .boom-img-wrap { order: 1; }
+      .stack-card.reverse .boom-text { order: 2; }
+      .footer-content-grid { grid-template-columns: 1fr; text-align: center; }
+      .footer-pitch-wrap { align-items: center; }
+      .hero-bottom-grid { flex-direction: column; align-items: center; text-align: center; gap: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================
+       INTRO GATE: CLEAN CLASSIC "AJ" (CLICK ANYWHERE TO ENTER)
+       ======================================================== -->
+  <div id="introGate">
+    <canvas id="creepyDotsCanvas"></canvas>
+    
+    <div class="intro-center">
+      <div class="royal-aura"></div>
+      <!-- Pure Classic Italic Monogram -->
+      <div class="intro-aj-text" id="introAj">AJ</div>
+    </div>
+  </div>
+
+  <!-- Background WebGL Particle Space -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Atmospheric Smokey Glows -->
+  <div class="glow-aura glow-1"></div>
+  <div class="glow-aura glow-2"></div>
+
+  <!-- Editorial Top Nav Header -->
+  <header class="nav-header" id="navHeader">
+    <a href="#" class="signature-logo">Angel John</a>
+    <ul class="nav-menu-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#impact">Impact</a></li>
+      <li><a href="#toolkit">Crafts</a></li>
+      <li><a href="#sound">Sound</a></li>
+      <li><a href="#leadership">Leadership</a></li>
+    </ul>
+    <div class="menu-burger">
+      <span></span>
+      <span></span>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ========================================================
+         SLIDE 1 (HERO): POPPING OUT "ANGEL JOHN"
+         ======================================================== -->
+    <section class="hero-stage">
+      <div class="hero-eyebrow" id="heroEyebrow">I DON'T JUST BUILD WITH CODE. I BUILD EXPERIENCES.</div>
+
+      <div class="kinetic-text-wrap" id="kineticWrap">
+        <h1 class="kinetic-massive-title" id="kineticTitle">ANGEL JOHN</h1>
+        <div class="kinetic-ghost-title" id="kineticGhost">ANGEL JOHN</div>
+      </div>
+
+      <div class="hero-bottom-grid">
+        <div class="hero-left-card" id="heroLeftCard">
+          <h3>CSE // DEVELOPER // CREATOR // LEADER</h3>
+          <p>From software and data to audio, video, music, and event leadership — I bring different disciplines together to create, solve, and lead.</p>
+          <a href="#about" class="capsule-btn">
+            ENTER THE UNIVERSE <span>+</span>
+          </a>
+        </div>
+
+        <div class="scroll-indicator" id="heroScroll">
+          <div class="scroll-wheel"></div>
+          <span>Scroll to Discover</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SLIDE 2: EDITORIAL "ABOUT / BUILT DIFFERENT."
+         ======================================================== -->
+    <section class="editorial-about-slide" id="about">
+      
+      <div class="about-top-deck">
+        <div class="about-left-title">
+          <h2 class="editorial-heading" id="aboutHeading">About</h2>
+          <div class="built-different-tag" id="builtDifferent">
+            Built different. <span class="dot-white"></span>
+          </div>
+        </div>
+
+        <div class="credential-tiles" id="credentialTiles">
+          <div class="credential-tile">
+            <div class="tile-icon-wrap">🎚️</div>
+            <div>
+              <div class="tile-title">FOH Audio Engineer</div>
+              <div class="tile-sub">5 Years Live Church Consoles</div>
+            </div>
+          </div>
+
+          <div class="credential-tile">
+            <div class="tile-icon-wrap">🎹</div>
+            <div>
+              <div class="tile-title">5th Grade Keyboardist</div>
+              <div class="tile-sub">Certified Pianist & Performer</div>
+            </div>
+          </div>
+
+          <div class="credential-tile">
+            <div class="tile-icon-wrap">💻</div>
+            <div>
+              <div class="tile-title">CSE & Council Lead</div>
+              <div class="tile-sub">HITS University Joint Secretary</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-main-stage">
+        
+        <div class="cinematic-portrait-container" id="portraitContainer">
+          <div class="cinematic-light-arc"></div>
+          <div class="portrait-image-mask">
+            <img src="portfoliophoto1.jpeg" alt="Angel John" />
+          </div>
+        </div>
+
+        <div class="about-bio-column" id="bioColumn">
+          <div class="micro-about-label">ABOUT ME</div>
+          <p class="editorial-bio-text">
+            I’m <strong>Angel John</strong>, a multidisciplinary creator and Computer Science Engineering student building at the intersection of technology, sound, and visual direction.
+          </p>
+          <p class="bio-highlight-line">
+            I design the experience and engineer it myself — from software systems and full-stack development to cinematic video edits, multi-instrumental compositions, and live front-of-house sound consoles. I care deeply about how things look, how they sound, how they feel, and how they perform in the real world.
+          </p>
+          <a href="#impact" class="capsule-btn">
+            EXPLORE THE WORK <span>+</span>
+          </a>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================================
+       SLIDE 3: CASCADING DIAGONAL STAT CARDS
+       ======================================================== -->
+    <section class="diagonal-showcase-section" id="impact">
+      <div class="section-tagline">// FULL-SPECTRUM EXECUTION</div>
+      
+      <div class="cascading-deck">
+        <div class="stagger-col">
+          <div class="cascading-card">
+            <div class="card-big-stat">5+ Yrs</div>
+            <div class="card-dot-row">
+              <div class="card-dot"></div>
+              <div class="card-label">Audio & Media</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stagger-col">
+          <div class="cascading-card">
+            <div class="card-big-stat">100%</div>
+            <div class="card-dot-row">
+              <div class="card-dot"></div>
+              <div class="card-label">Live Execution</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stagger-col">
+          <div class="cascading-card">
+            <div class="card-big-stat italic-serif">Creative</div>
+            <div class="card-dot-row">
+              <div class="card-dot"></div>
+              <div class="card-label">Sound & Visuals</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stagger-col">
+          <div class="cascading-card">
+            <div class="card-big-stat italic-serif">Leader</div>
+            <div class="card-dot-row">
+              <div class="card-dot"></div>
+              <div class="card-label">Teams & Community</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+       SLIDE 4: CRAFTS, TOOLS & TECHNOLOGY
+       ======================================================== -->
+    <section class="toolkit-section" id="toolkit">
+      <div class="section-tagline">// CREATOR TOOLKIT</div>
+      <div class="toolkit-header">
+        <h2 class="toolkit-title">CRAFTS, TOOLS & TECHNOLOGY</h2>
+        <a href="#collab" class="capsule-btn">
+          EXPLORE ALL CRAFTS <span>+</span>
+        </a>
+      </div>
+
+      <div class="tools-grid">
+        <div class="tool-card active" onclick="selectTool(0)">
+          <div class="tool-icon-ring">🎬</div>
+          <h4>Video Editing</h4>
+        </div>
+
+        <div class="tool-card" onclick="selectTool(1)">
+          <div class="tool-icon-ring">🎚️</div>
+          <h4>Audio Mixing</h4>
+        </div>
+
+        <div class="tool-card" onclick="selectTool(2)">
+          <div class="tool-icon-ring">🎹</div>
+          <h4>Instruments</h4>
+        </div>
+
+        <div class="tool-card" onclick="selectTool(3)">
+          <div class="tool-icon-ring">⚡</div>
+          <h4>CSE & Code</h4>
+        </div>
+      </div>
+
+      <div class="tool-desc-bar" id="toolDesc">
+        Turning raw footage into polished visual stories through thoughtful cuts, pacing, transitions, and cinematic storytelling.
+      </div>
+    </section>
+
+    <!-- ========================================================
+         BOOM PHOTO 3 (CREATIVE ANGLE)
+         ======================================================== -->
+    <section class="boom-section">
+      <div class="boom-panel" id="boomCard3">
+        <div class="boom-img-wrap">
+          <img src="portfoliophoto3.jpeg" alt="Creative Identity" />
+        </div>
+        <div class="boom-text">
+          <div class="section-tagline">// PERSPECTIVE // IDENTITY</div>
+          <h2>Creative Direction & Framing</h2>
+          <p>
+            Stepping outside traditional engineering boundaries. Curating visual, auditory, and digital experiences that leave a strong imprint on every audience.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         BOOM PHOTO 2 (PHOTOGRAPHY SHOWCASE)
+         ======================================================== -->
+    <section class="boom-section">
+      <div class="boom-panel" id="boomCard2">
+        <div class="boom-img-wrap">
+          <img src="portfoliophoto2.jpeg" alt="Photography Highlight" />
+        </div>
+        <div class="boom-text">
+          <div class="section-tagline">// VISUALS // CINEMATOGRAPHY</div>
+          <h2>Still & Motion Photography</h2>
+          <p>
+            Calculated exposures, deliberate camera angles, and dynamic color science. Every frame treated with cinematic depth and visual weight.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SOUND CRAFT & MUSIC DISCIPLINES (PHOTOS 7, 8, 9, 10)
+         ======================================================== -->
+    <div id="sound">
+      <div class="section-tagline">// SOUND CRAFT & ACOUSTIC ARCHITECTURE</div>
+      <h2 style="font-family: 'Space Grotesk'; font-size: 2.5rem; margin-bottom: 30px;">INSTRUMENTS & AUDIO CONSOLES</h2>
+    </div>
+
+    <section class="cards-stack">
+      <!-- Photo 7: Keyboard -->
+      <div class="stack-card">
+        <div class="boom-img-wrap">
+          <img src="portfoliophoto7.jpeg" alt="Keyboardist" />
+        </div>
+        <div class="boom-text">
+          <div class="section-tagline">CERTIFIED GRADE 5</div>
+          <h2>Pianist & Keyboardist</h2>
+          <p>Started playing in 8th standard. Certified Grade 5 with continuous performance in harmonic arrangement and live worship keys.</p>
+        </div>
+      </div>
+
+      <!-- Photo 8: Guitar -->
+      <div class="stack-card reverse">
+        <div class="boom-img-wrap">
+          <img src="portfoliophoto8.jpeg" alt="Guitarist" />
+        </div>
+        <div class="boom-text">
+          <div class="section-tagline">STRINGS & MELODY</div>
+          <h2>Acoustic & Rhythm Guitar</h2>
+          <p>Passionate guitarist weaving chord progressions, textured riffs, and driving rhythm backdrops for live ensembles.</p>
+        </div>
+      </div>
+
+      <!-- Photo 10: Drums & Flute -->
+      <div class="stack-card">
+        <div class="boom-img-wrap">
+          <img src="portfoliophoto10.jpeg" alt="Drums Performance" onerror="this.src='portfoliophoto10.jpg'" />
+        </div>
+        <div class="boom-text">
+          <div class="section-tagline">PERCUSSION & WINDS</div>
+          <h2>Drummer & Flutist</h2>
+          <p>Delivering high-energy rhythm tracks on drums with solid tempo lock, while studying acoustic breath dynamics and melodic phrasing on the flute.</p>
+        </div>
+      </div>
+
+      <!-- Photo 9: Live Audio Mixing (5 Years) -->
+      <div class="stack-card reverse">
+        <div class="boom-img-wrap">
+          <img src="portfoliophoto9.jpeg" alt="Live Audio Mixer" onerror="this.src='portfoliophoto9.jpg'" />
+        </div>
+        <div class="boom-text">
+          <div class="section-tagline">5 YEARS MAR THOMA CHURCH</div>
+          <h2>Front-of-House Audio Mixer</h2>
+          <p>Managed multi-channel live mixing consoles, acoustic calibration, and sound distribution continuously for 5 years.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         LEADERSHIP & CAMPUS ROLES
+         ======================================================== -->
+    <div id="leadership">
+      <div class="section-tagline">// HINDUSTAN INSTITUTE OF TECHNOLOGY & SCIENCE</div>
+      <h2 style="font-family: 'Space Grotesk'; font-size: 2.5rem; margin-bottom: 30px;">EXECUTIVE STUDENT LEADERSHIP</h2>
+    </div>
+
+    <section class="cards-stack">
+      <!-- Photo 4: Club Secretary -->
+      <div class="stack-card">
+        <div class="boom-img-wrap">
+          <img src="portfoliophoto4.jpeg" alt="Club Secretary" />
+        </div>
+        <div class="boom-text">
+          <div class="section-tagline">STUDENT COUNCIL</div>
+          <h2>Club Secretary</h2>
+          <p>Coordinated university club platforms, managed inter-departmental initiatives, and represented student bodies across campus.</p>
+        </div>
+      </div>
+
+      <!-- Photo 5: Joint Secretary -->
+      <div class="stack-card reverse">
+        <div class="boom-img-wrap">
+          <img src="portfoliophoto5.jpeg" alt="Joint Secretary" />
+        </div>
+        <div class="boom-text">
+          <div class="section-tagline">EXECUTIVE COUNCIL</div>
+          <h2>Joint Secretary</h2>
+          <p>Elevated to executive Joint Secretary, managing high-level university operations and large-scale council governance.</p>
+        </div>
+      </div>
+
+      <!-- Photo 6: Blue Screen Club -->
+      <div class="stack-card">
+        <div class="boom-img-wrap">
+          <img src="portfoliophoto6.jpeg" alt="Blue Screen Club" />
+        </div>
+        <div class="boom-text">
+          <div class="section-tagline">TECH COMMUNITY & HACKATHONS</div>
+          <h2>Blue Screen Programming Club Lead</h2>
+          <p>Club Lead & Lead Event Manager. Spearheaded competitive hackathons, workshops, and student tech culture.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         "WANNA COLLABORATE?" BANNER
+         ======================================================== -->
+    <section class="collab-section" id="collab">
+      <div class="collab-banner">
+        <h2>WANNA COLLABORATE?</h2>
+        <p>Have an ambitious idea, media project, sound production, or tech initiative? Let's collaborate to create unforgettable experiences.</p>
+        <a href="mailto:angeljohnpta@gmail.com" class="capsule-btn">
+          LET'S COLLABORATE <span>+</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         YAROSLAV FOOTER: ANGEL JOHN SIGNATURE & PROMINENT WATERMARK
+         ======================================================== -->
+    <footer class="yaroslav-footer">
+      <div class="footer-content-grid">
+        <!-- Left: Brand & Vision -->
+        <div class="footer-brand-bio">
+          <h3>Angel John</h3>
+          <p>Thoughtful design.</p>
+          <p>Intelligent systems.</p>
+          <p style="color: #ffffff; font-weight: 600;">Built with care.</p>
+        </div>
+
+        <!-- Center: Connect Links & Email -->
+        <div class="footer-center-nav">
+          <p style="font-size: 0.88rem; color: #ffffff; font-weight: 600; margin-bottom: 2px;">
+            Want to know more about me? Connect on LinkedIn & explore visual work:
+          </p>
+
+          <div class="social-connect-pills">
+            <!-- LinkedIn Pill -->
+            <a href="https://www.linkedin.com/in/angel-john-3401a1293" target="_blank" rel="noopener noreferrer" class="social-pill">
+              <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+              <span>LinkedIn Profile</span>
+            </a>
+
+            <!-- Instagram Pill -->
+            <a href="https://www.instagram.com/___a_john__" target="_blank" rel="noopener noreferrer" class="social-pill">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              <span>Instagram Media</span>
+            </a>
+          </div>
+
+          <div class="footer-email-tag">
+            Email: <a href="mailto:angeljohnpta@gmail.com">angeljohnpta@gmail.com</a>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 6px;">© 2026 Angel John. All rights reserved.</div>
+        </div>
+
+        <!-- Right Pitch Card & Social Badges -->
+        <div class="footer-pitch-wrap">
+          <div class="footer-pitch-card">
+            <img src="portfoliophoto1.jpeg" alt="Angel Mini" class="pitch-thumb" />
+            <div class="pitch-text">
+              <h5>Let's build your next big thing</h5>
+              <a href="mailto:angeljohnpta@gmail.com">Send Email →</a>
+            </div>
+          </div>
+
+          <div class="social-badges-row">
+            <a href="https://www.linkedin.com/in/angel-john-3401a1293" target="_blank" rel="noopener noreferrer" class="iconic-square-badge" title="LinkedIn Profile">
+              <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+            </a>
+            <a href="https://www.instagram.com/___a_john__" target="_blank" rel="noopener noreferrer" class="iconic-square-badge" title="Instagram Profile">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            <a href="mailto:angeljohnpta@gmail.com" class="iconic-square-badge" title="Direct Email">
+              <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- MASSIVE STATEMENT WATERMARK -->
+      <div class="giant-cursive-watermark">angel john</div>
+    </footer>
+
+  </main>
+
+  <script>
+    // --- 1. CREEPY ORGANIC WHITE SWARMING DOTS ENGINE ---
+    const creepyCanvas = document.getElementById('creepyDotsCanvas');
+    const cCtx = creepyCanvas.getContext('2d');
+
+    function resizeCreepyCanvas() {
+      creepyCanvas.width = window.innerWidth;
+      creepyCanvas.height = window.innerHeight;
+    }
+    resizeCreepyCanvas();
+    window.addEventListener('resize', resizeCreepyCanvas);
+
+    const creepyParticles = [];
+    const particleCount = 85;
+
+    class CreepyParticle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * creepyCanvas.width;
+        this.y = Math.random() * creepyCanvas.height;
+        this.vx = (Math.random() - 0.5) * 1.8;
+        this.vy = (Math.random() - 0.5) * 1.8;
+        this.radius = Math.random() * 2.2 + 0.8;
+        this.noiseOffset = Math.random() * 1000;
+        this.alpha = Math.random() * 0.7 + 0.3;
+      }
+      update() {
+        this.noiseOffset += 0.02;
+        this.vx += (Math.random() - 0.5) * 0.4;
+        this.vy += (Math.random() - 0.5) * 0.4;
+        
+        const dx = creepyCanvas.width / 2 - this.x;
+        const dy = creepyCanvas.height / 2 - this.y;
+        this.vx += dx * 0.00008;
+        this.vy += dy * 0.00008;
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        this.vx *= 0.96;
+        this.vy *= 0.96;
+
+        if (this.x < 0 || this.x > creepyCanvas.width || this.y < 0 || this.y > creepyCanvas.height) {
+          this.reset();
+        }
+      }
+      draw() {
+        cCtx.beginPath();
+        cCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        cCtx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+        cCtx.shadowBlur = 12;
+        cCtx.shadowColor = '#ffffff';
+        cCtx.fill();
+        cCtx.shadowBlur = 0;
+      }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+      creepyParticles.push(new CreepyParticle());
+    }
+
+    let creepyAnimId;
+    function renderCreepyDots() {
+      cCtx.clearRect(0, 0, creepyCanvas.width, creepyCanvas.height);
+
+      for (let i = 0; i < creepyParticles.length; i++) {
+        for (let j = i + 1; j < creepyParticles.length; j++) {
+          const dist = Math.hypot(creepyParticles[i].x - creepyParticles[j].x, creepyParticles[i].y - creepyParticles[j].y);
+          if (dist < 85) {
+            cCtx.beginPath();
+            cCtx.moveTo(creepyParticles[i].x, creepyParticles[i].y);
+            cCtx.lineTo(creepyParticles[j].x, creepyParticles[j].y);
+            cCtx.strokeStyle = `rgba(255, 255, 255, ${(1 - dist / 85) * 0.25})`;
+            cCtx.lineWidth = 0.8;
+            cCtx.stroke();
+          }
+        }
+      }
+
+      creepyParticles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      creepyAnimId = requestAnimationFrame(renderCreepyDots);
+    }
+    renderCreepyDots();
+
+    // --- 2. THREE.JS SUBTLE AMBIENT DUST ENGINE ---
+    const canvas = document.getElementById('webgl-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const count = 900;
+    const geom = new THREE.BufferGeometry();
+    const pos = new Float32Array(count * 3);
+
+    for (let i = 0; i < count * 3; i++) {
+      pos[i] = (Math.random() - 0.5) * 16;
+    }
+    geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+
+    const mat = new THREE.PointsMaterial({
+      size: 0.024,
+      color: 0x94a3b8,
+      transparent: true,
+      opacity: 0.4
+    });
+
+    const points = new THREE.Points(geom, mat);
+    scene.add(points);
+    camera.position.z = 5;
+
+    const animateLoop = () => {
+      requestAnimationFrame(animateLoop);
+      points.rotation.y += 0.0005;
+      points.rotation.x += 0.0002;
+      renderer.render(scene, camera);
+    };
+    animateLoop();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // --- 3. CLICK-TO-ENTER: CLEAN DISSOLVE & LAUNCH ---
+    gsap.registerPlugin(ScrollTrigger);
+
+    const introGate = document.getElementById('introGate');
+    let hasEntered = false;
+
+    introGate.addEventListener('click', () => {
+      if (hasEntered) return;
+      hasEntered = true;
+
+      const launchTl = gsap.timeline();
+
+      launchTl.to("#introAj", {
+        scale: 1.25,
+        opacity: 0,
+        filter: "blur(18px)",
+        duration: 0.8,
+        ease: "power2.in"
+      })
+      .to("#introGate", {
+        opacity: 0,
+        duration: 0.7,
+        ease: "power2.out",
+        onComplete: () => {
+          introGate.style.display = 'none';
+          cancelAnimationFrame(creepyAnimId);
+        }
+      }, "-=0.3")
+
+      // Reveal Top Nav Header
+      .to("#navHeader", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out"
+      }, "-=0.2")
+
+      // Pop-Out Massive Intersecting Hero Title
+      .to("#kineticTitle", {
+        scale: 1,
+        y: 0,
+        opacity: 1,
+        duration: 1.6,
+        ease: "power3.out"
+      }, "-=0.4")
+      .to("#kineticGhost", {
+        scale: 1,
+        y: 24,
+        opacity: 0.8,
+        duration: 1.6,
+        ease: "power3.out"
+      }, "-=1.4")
+      .to("#heroEyebrow", {
+        opacity: 1,
+        y: 0,
+        duration: 1.0,
+        ease: "power2.out"
+      }, "-=1.2")
+      .to(["#heroLeftCard", "#heroScroll"], {
+        opacity: 1,
+        y: 0,
+        stagger: 0.2,
+        duration: 1.0,
+        ease: "power2.out"
+      }, "-=0.8");
+    });
+
+    // --- 4. SCROLL REVEALS FOR SLIDE 2 (ABOUT / BUILT DIFFERENT) ---
+    const aboutTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: "#about",
+        start: "top 75%",
+        toggleActions: "play none none reverse"
+      }
+    });
+
+    aboutTl.from("#aboutHeading", {
+      y: 40,
+      opacity: 0,
+      duration: 1.1,
+      ease: "power3.out"
+    })
+    .from("#builtDifferent", {
+      opacity: 0,
+      x: -20,
+      duration: 0.8,
+      ease: "power2.out"
+    }, "-=0.8")
+    .from(".credential-tile", {
+      y: 30,
+      opacity: 0,
+      stagger: 0.15,
+      duration: 0.9,
+      ease: "power2.out"
+    }, "-=0.7")
+    .from("#portraitContainer", {
+      scale: 0.92,
+      opacity: 0,
+      duration: 1.2,
+      ease: "power2.out"
+    }, "-=0.8")
+    .from("#bioColumn > *", {
+      y: 30,
+      opacity: 0,
+      stagger: 0.18,
+      duration: 1.0,
+      ease: "power3.out"
+    }, "-=0.9");
+
+    // --- 5. CASCADING CARDS SCROLL REVEAL ---
+    gsap.utils.toArray('.cascading-card').forEach((card, i) => {
+      gsap.from(card, {
+        opacity: 0,
+        y: 80,
+        rotationZ: (i % 2 === 0 ? -3 : 3),
+        duration: 1.2,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: card,
+          start: "top 85%",
+          toggleActions: "play none none reverse"
+        }
+      });
+    });
+
+    // --- 6. TOOL SELECTOR LOGIC ---
+    const toolDescriptions = [
+      "Turning raw footage into polished visual stories through thoughtful cuts, pacing, transitions, and cinematic storytelling.",
+      "Shaping sound with precision — balancing levels, refining clarity, and creating immersive audio experiences.",
+      "Expressing ideas through music with years of experience across keyboard, drums, and musical performance.",
+      "Building practical digital solutions through programming, data, problem-solving, and computer science."
+    ];
+
+    function selectTool(index) {
+      const cards = document.querySelectorAll('.tool-card');
+      cards.forEach((card, idx) => {
+        if (idx === index) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+      document.getElementById('toolDesc').innerText = toolDescriptions[index];
+    }
+
+    // --- 7. SCROLL REVEALS FOR BOOM PHOTOS 2 & 3 ---
+    gsap.utils.toArray(['#boomCard3', '#boomCard2']).forEach(panel => {
+      gsap.to(panel, {
+        scale: 1,
+        y: 0,
+        opacity: 1,
+        duration: 1.0,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: panel,
+          start: "top 80%",
+          toggleActions: "play none none reverse"
+        }
+      });
+    });
+
+    // Staggered Scroll Reveal for Stack Cards
+    gsap.utils.toArray('.stack-card').forEach(card => {
+      gsap.to(card, {
+        opacity: 1,
+        y: 0,
+        duration: 0.9,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: card,
+          start: "top 85%",
+          toggleActions: "play none none reverse"
+        }
+      });
+    });
+  </script>
+</body>
+</html>
